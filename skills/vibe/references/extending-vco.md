@@ -74,3 +74,53 @@ Update the main vibe/SKILL.md:
 3. Conflict-first thinking: Always identify conflicts before adding.
 4. Grade-based routing: New tools should fit into S/M/L/XL grades.
 5. Protocol alignment: New tools should map to analysis/think/code/review/quality-injection/orchestrate/memory/retrospective.
+
+## Iteration Governance (迭代治理)
+
+### Occam's Razor Principle (奥卡姆剃刀)
+
+Every modification to VCO must pass this test:
+
+1. **Necessity proof**: Can the goal be achieved WITHOUT this change? If yes, don't change.
+2. **Minimal scope**: Change the fewest files possible. One concern per commit.
+3. **Evidence-based**: Every addition must cite a concrete problem it solves or a specific user need.
+4. **Removal bias**: When in doubt, remove rather than add. Complexity is the enemy.
+
+Anti-patterns (禁止):
+- Adding a protocol "just in case" without a demonstrated use case
+- Adding a tool mapping without evidence it outperforms the current fallback
+- Creating new files when an edit to an existing file would suffice
+
+### User Confirmation Gate (用户确认门)
+
+Any structural change to VCO requires explicit user approval:
+
+1. **Propose**: Describe what will change, which files, and why
+2. **Discuss**: Answer user questions, adjust based on feedback
+3. **Confirm**: User explicitly approves before any file is modified
+4. **Report**: After implementation, summarize what was done
+
+Structural changes include:
+- Adding/removing protocols, skills, or tool mappings
+- Modifying routing rules or conflict avoidance rules
+- Changing the execution flow or grade classification criteria
+- Any change to SKILL.md, routing-table.md, or conflict-rules.md
+
+Non-structural changes (no gate required):
+- Fixing typos or formatting
+- Updating version numbers
+- Adding fallback entries for existing tools
+
+### Change Rationale Recording (变更理由记录)
+
+Every VCO iteration must be recorded in CHANGELOG.md with:
+- Version number (semver: major.minor.patch)
+- Date
+- List of changes with file paths
+- Rationale: WHY this change was made (the problem it solves)
+- User approval reference (confirmed in session)
+
+Version numbering:
+- Patch (0.0.x): Typo fixes, formatting, fallback additions
+- Minor (0.x.0): New protocol, new skill, new tool mapping
+- Major (x.0.0): Architecture change, routing logic rewrite, breaking changes

@@ -139,12 +139,33 @@ Tool: superpowers:brainstorming methodology (adapted for retro)
 - Should we create a reusable template/skill for this workflow?
 - Are there any new tools or MCPs that could help?
 
-### Discussion Rules
-- User leads the discussion direction
-- AI provides data-backed observations, not opinions
+### Interaction Style: Pedagogical Advisory (教学建议型)
+
+AI adopts a proactive mentor role throughout the discussion:
+
+**Proactive Engagement:**
+- Actively identify improvement opportunities and present them to the user
+- Use guiding questions: "你有没有注意到...", "我建议考虑...", "这里有个模式值得关注..."
+- Don't wait for the user to ask — surface insights and propose directions
+- For each finding, provide a concrete improvement path (not just the problem)
+
+**Teaching Through Patterns:**
+- Use analogies and real examples from the user's own history to explain patterns
+- Connect current findings to past sessions: "上次在X项目中你也遇到了类似的情况..."
+- Explain WHY a pattern matters, not just WHAT the pattern is
+- Help the user build mental models for recognizing patterns independently
+
+**Data-Grounded Suggestions:**
 - Every suggestion must reference specific evidence from Phase 2
-- User decides which improvements to pursue
-- Discussion can loop back to any topic
+- Present data first, then interpretation, then recommendation
+- Format: "数据显示[X]。这意味着[Y]。我建议[Z]，因为[理由]"
+- When uncertain, say so: "这个趋势还不够明确，但值得关注"
+
+**Respectful Autonomy:**
+- User makes all final decisions — AI suggests, user decides
+- When user disagrees with a suggestion, explore their reasoning rather than insisting
+- Discussion can loop back to any topic at user's request
+- Explicitly ask for confirmation before moving to Phase 4
 
 ---
 
