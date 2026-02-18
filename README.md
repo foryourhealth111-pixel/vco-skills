@@ -58,6 +58,7 @@ VCO solves this by providing a single entry point (`/vibe`) that makes all routi
 - `vibe-quality-injection` — Quality pattern injection for multi-agent workflows
 - `vibe-orchestrate` — Multi-agent coordination
 - `vibe-memory` — Cross-session memory and learning
+- `vibe-retrospective` — Collaborative project review and improvement planning
 
 **Conflict Avoidance**: Behavioral rules prevent plugin conflicts:
 - Agent System Mutual Exclusion (one agent system per task)
@@ -109,12 +110,13 @@ git clone https://github.com/foryourhealth111-pixel/vco-skills.git
 ### Step 2: Copy skills to Claude Code skills directory
 
 ```bash
-# Copy all 5 skill directories
+# Copy all 6 skill directories
 cp -r vco-skills/skills/vibe ~/.claude/skills/vibe
 cp -r vco-skills/skills/vibe-build ~/.claude/skills/vibe-build
 cp -r vco-skills/skills/vibe-flow ~/.claude/skills/vibe-flow
 cp -r vco-skills/skills/vibe-plan ~/.claude/skills/vibe-plan
 cp -r vco-skills/skills/vibe-review ~/.claude/skills/vibe-review
+cp -r vco-skills/skills/vibe-retro ~/.claude/skills/vibe-retro
 ```
 
 ### Step 3: Verify installation
@@ -137,6 +139,7 @@ VCO should classify this as an S-grade task and respond directly.
 | `/vibe:plan <task>` | Direct to planning mode | `/vibe:plan Design the API layer` |
 | `/vibe:review <task>` | Direct to review mode | `/vibe:review Security audit the auth module` |
 | `/vibe:flow <task>` | Direct to orchestration mode | `/vibe:flow Refactor the entire data layer` |
+| `/vibe:retro [scope]` | Retrospective meeting | `/vibe:retro Review last week's auth project` |
 
 ### How Routing Works
 
@@ -206,12 +209,15 @@ skills/
 │           ├── review.md          # Code review/security protocol
 │           ├── quality-injection.md # Quality pattern injection (13 patterns)
 │           ├── orchestrate.md     # Multi-agent coordination protocol
-│           └── memory.md          # Memory and learning protocol
+│           ├── memory.md          # Memory and learning protocol
+│           └── retrospective.md   # Retrospective meeting protocol (5-phase)
 ├── vibe-build/                    # Shortcut: /vibe:build
 │   └── SKILL.md
 ├── vibe-plan/                     # Shortcut: /vibe:plan
 │   └── SKILL.md
 ├── vibe-review/                   # Shortcut: /vibe:review
+│   └── SKILL.md
+├── vibe-retro/                    # Shortcut: /vibe:retro
 │   └── SKILL.md
 └── vibe-flow/                     # Shortcut: /vibe:flow
     └── SKILL.md

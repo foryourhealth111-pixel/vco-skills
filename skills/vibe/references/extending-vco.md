@@ -73,4 +73,4 @@ Update the main vibe/SKILL.md:
 2. Additive only: New tools are added alongside existing ones.
 3. Conflict-first thinking: Always identify conflicts before adding.
 4. Grade-based routing: New tools should fit into S/M/L/XL grades.
-5. Protocol alignment: New tools should map to analysis/think/code/review/quality-injection/orchestrate/memory.
+5. Protocol alignment: New tools should map to analysis/think/code/review/quality-injection/orchestrate/memory/retrospective.

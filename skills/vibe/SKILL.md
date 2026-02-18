@@ -54,6 +54,7 @@ User task arrives
   |   +- Review/Quality     -> vibe-review protocol
   |   +- Complex orchestration -> vibe-orchestrate protocol
   |   +- Research/Analysis  -> vibe-think protocol (research mode)
+  |   +- Retrospective/Review workflow -> vibe-retrospective protocol
   |
   +- Apply conflict rules -> See "Conflict Avoidance" below
 ```
@@ -106,6 +107,7 @@ After classification, activate the corresponding protocol by reading its referen
 | vibe-code | references/protocols/code.md | Everything-CC, Claude-code-settings |
 | vibe-review | references/protocols/review.md | Everything-CC, Superpowers, ruflo |
 | vibe-quality-injection | references/protocols/quality-injection.md | Cross-plugin quality patterns (13 patterns) |
+| vibe-retrospective | references/protocols/retrospective.md | episodic-memory, reflection-harder, hookify, think-ultra |
 | vibe-orchestrate | references/protocols/orchestrate.md | Claude-flow/ruflo, Ralph-loop |
 | vibe-memory | references/protocols/memory.md | episodic-memory, ruflo memory, instincts |
 
@@ -195,6 +197,7 @@ and references/fallback-chains.md for degradation paths.
 - references/extending-vco.md — Guide for adding new tools or adapting to updates
 - references/protocols/analysis.md — Pre-routing analysis and compound task decomposition
 - references/protocols/quality-injection.md — Quality injection for multi-agent workflows (13 patterns)
+- references/protocols/retrospective.md — Retrospective meeting protocol (5-phase collaborative review)
 - references/protocols/think.md — vibe-think protocol specification
 - references/protocols/code.md — vibe-code protocol specification
 - references/protocols/review.md — vibe-review protocol specification

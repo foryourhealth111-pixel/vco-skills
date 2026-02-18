@@ -23,6 +23,7 @@ Navigation guide for all VCO (Vibe Code Orchestrator) documentation.
 | vibe-quality-injection | [protocols/quality-injection.md](protocols/quality-injection.md) | Cross-plugin: 6 Pre + 7 Post patterns |
 | vibe-orchestrate | [protocols/orchestrate.md](protocols/orchestrate.md) | Claude-flow/ruflo, Ralph-loop |
 | vibe-memory | [protocols/memory.md](protocols/memory.md) | episodic-memory, ruflo memory, instincts, feedback loop |
+| vibe-retrospective | [protocols/retrospective.md](protocols/retrospective.md) | episodic-memory, reflection-harder, hookify, think-ultra |
 
 ## Reading Order
 
