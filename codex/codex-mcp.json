@@ -1,0 +1,7 @@
+{
+  "codex": {
+    "command": "codex",
+    "args": ["mcp-server"],
+    "description": "OpenAI Codex as MCP server — enables Claude Code to call Codex tools directly"
+  }
+}

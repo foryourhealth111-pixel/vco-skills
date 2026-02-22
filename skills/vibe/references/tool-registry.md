@@ -228,3 +228,64 @@ TeamCreate is a built-in Claude Code tool (always available, no MCP dependency).
 
 TeamCreate manages agent lifecycle; ruflo provides workflow engine + vector memory.
 When ruflo is unavailable, TeamCreate operates independently (degraded mode).
+
+---
+
+## 7. OpenAI Codex (Cross-Model Integration)
+
+**Version**: 0.104.0+
+**Location**: ~/.npm-global/node_modules/@openai/codex/
+**Config**: ~/.codex/config.toml
+
+### Integration Modes
+
+| Mode | Method | Purpose | Verified |
+|------|--------|---------|----------|
+| MCP Server | `codex mcp-server` (stdio) | Deep integration — Codex tools appear as native MCP tools in Claude Code | ⚠️ Requires Codex API key |
+| exec 委派 | `codex exec "task" --full-auto` | Non-interactive task delegation with structured output | ⚠️ Requires Codex API key |
+| review 审查 | `codex review --uncommitted` | Cross-model code review (different model = different blind spots) | ⚠️ Requires Codex API key |
+
+### MCP Server Registration
+
+Add to Claude Code MCP config:
+```json
+{
+  "codex": {
+    "command": "codex",
+    "args": ["mcp-server"]
+  }
+}
+```
+
+### exec Key Flags
+
+| Flag | Purpose |
+|------|---------|
+| `--full-auto` | Autonomous execution (sandbox + auto-approve) |
+| `--json` | JSONL event stream output |
+| `-o FILE` | Write final message to file |
+| `--output-schema FILE` | Structured output via JSON Schema |
+| `-C DIR` | Working directory |
+| `-m MODEL` | Override model |
+| `-s MODE` | Sandbox: read-only, workspace-write, danger-full-access |
+
+### review Key Flags
+
+| Flag | Purpose |
+|------|---------|
+| `--uncommitted` | Review staged + unstaged + untracked changes |
+| `--base BRANCH` | Review changes against base branch |
+| `--commit SHA` | Review specific commit |
+
+### Cross-Tool Compatibility
+
+- `CLAUDE.md` ↔ `AGENTS.md` symlink: both tools read the same instructions
+- Shared MCP servers: context7, playwright, github can be configured in both tools
+- Shared workspace: both tools operate on the same filesystem and git repo
+
+### Characteristics
+- Different model family (GPT/o3) provides complementary perspective to Claude
+- exec mode supports timeout and structured output for automation
+- MCP server mode enables deepest integration (Codex tools as Claude Code tools)
+- No hooks registered (external tool, invoked on demand)
+- Requires separate API key (OpenAI or Azure OpenAI)

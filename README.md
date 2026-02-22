@@ -33,6 +33,7 @@ Then edit `~/.claude/settings.json` to add your API credentials, start a new Cla
 | SuperClaude | 30+ sc:* commands (cloned from upstream) | `~/.claude/commands/sc/` |
 | Plugins | 10 marketplace plugins | via `claude plugins install` |
 | claude-flow | Multi-agent orchestration | via `npm install -g` |
+| codex/ | Codex integration (exec wrapper, MCP config, templates) | `~/.codex/` |
 
 ## Architecture
 
@@ -136,9 +137,10 @@ bash install.sh --skip-claude-flow
 | Memory Division | TodoWrite=state, ruflo=vectors, Serena=project, instincts=behavior. |
 | Command Priority | User explicit > VCO routing > plugin defaults. |
 
+## Codex Cross-Model IntegrationVCO can delegate tasks to OpenAI Codex for cross-model benefits:```bash# MCP integration — Codex tools appear as native Claude Code tools# Add to Claude Code MCP config:# "codex": { "command": "codex", "args": ["mcp-server"] }# Task delegation — non-interactive executioncodex exec "optimize the sorting algorithm" --full-auto -o result.txt# Dual-model review — different model = different blind spotscodex review --uncommitted "Focus on security vulnerabilities"# Cross-tool shared instructionsln -s CLAUDE.md AGENTS.md```See `codex/` directory for wrapper scripts, MCP config, and templates.
 ## Version
 
-- VCO: 2.0.6
+- VCO: 2.1.0
 - Ecosystem: 1.0.0
 
 ## License

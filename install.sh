@@ -120,6 +120,7 @@ if [ "$SKIP_CF" = false ]; then
 fi
 
 echo ""
+# 8. Codex integrationecho ""echo "[8/8] Checking Codex..."if command -v codex &>/dev/null; then  echo "  Codex CLI found: $(codex --version 2>/dev/null || echo unknown)"  CODEX_DIR="${HOME}/.codex"  if [ ! -f "${CODEX_DIR}/config.toml" ]; then    mkdir -p "${CODEX_DIR}"    cp "${SCRIPT_DIR}/codex/config.template.toml" "${CODEX_DIR}/config.toml"    echo "  Created ~/.codex/config.toml — EDIT IT to add your API key"  else    echo "  ~/.codex/config.toml already exists"  fielse  echo "  Codex not found (optional — npm install -g @openai/codex)"fi
 echo "=== Installation Complete ==="
 echo ""
 echo "Next steps:"

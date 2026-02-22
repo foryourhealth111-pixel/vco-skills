@@ -1,6 +1,6 @@
 # VCO v2.0 — Vibe Code Orchestrator
 
-Unified entry point: classifies tasks via quick probe + user decision, selects optimal tools, coordinates 6 integrated plugins.
+Unified entry point: classifies tasks via quick probe + user decision, selects optimal tools, coordinates 7 integrated tools (6 plugins + OpenAI Codex cross-model).
 
 ## When to Use
 
@@ -95,6 +95,21 @@ Specialized agents available at ANY grade (exempt from agent boundary rule):
 Excluded tools (do NOT use for VCO-routed tasks):
 - sc:implement — use VCO coding flow (tdd-guide / subagent-driven-dev) instead
 
+
+### Codex Cross-Model Routes (Optional)
+
+When Codex is available (API key configured + `codex` CLI installed), VCO can route to Codex for cross-model benefits:
+
+| Task Type | When to Route to Codex | Method |
+|-----------|----------------------|--------|
+| Review | Dual-model review: Claude writes, Codex reviews (or vice versa) | codex review --uncommitted |
+| Coding | Tasks suited to o3/gpt-5-codex reasoning (algorithm, math-heavy) | codex exec "task" --full-auto |
+| Debug | Second opinion when Claude cannot find root cause | codex exec "debug: ..." --full-auto -o result.txt |
+| Research | Codex web_search as complement to Claude search | Via MCP: codex mcp-server |
+
+Codex routing is ALWAYS optional. If Codex is unavailable, VCO falls back to Claude-only tools.
+Detection: `command -v codex` before routing.
+
 ## 3. Execution Flows
 
 ### M Grade: 4 Steps
@@ -162,6 +177,44 @@ Enhanced tier (XL): see protocols/team.md.
 **Rule 2 — Memory Division**: TodoWrite=state, ruflo=vectors, Serena=project, instincts=behavior.
 **Rule 3 — Command Priority**: User explicit command > VCO routing > plugin defaults.
 
+## Codex Integration
+
+### MCP Server Mode (Deep Integration)
+
+Register Codex as MCP server in Claude Code settings:
+```
+"mcpServers": { "codex": { "command": "codex", "args": ["mcp-server"] } }
+```
+After registration, Codex tools appear as native MCP tools. Use ToolSearch with "codex" to discover.
+
+### exec Mode (Task Delegation)
+
+Delegate independent subtasks to Codex via Bash:
+```
+codex exec "task description" --full-auto -o /tmp/codex-result.txt -C /path/to/project
+```
+Read result file after completion. Use --json for JSONL output. Use --output-schema for structured responses.
+
+### review Mode (Cross-Model Review)
+
+After Claude Code writes code, get a second opinion:
+```
+codex review --uncommitted "Focus on security and edge cases"
+codex review --base main "Review all changes on this branch"
+```
+
+### Cross-Tool Shared Instructions
+
+Create symlink so both tools read the same project instructions:
+```
+ln -s CLAUDE.md AGENTS.md
+```
+
+### Availability Detection
+
+Before routing to Codex, check: `command -v codex`
+If unavailable, silently fall back to Claude-only tools (no user notification needed).
+
 ## 7. Tool Detection (Lazy)
 
 Detect availability AFTER routing selects a tool, BEFORE invoking:
@@ -209,11 +262,22 @@ Detect availability AFTER routing selects a tool, BEFORE invoking:
 - Probe: cross-module, parallelizable → XL recommended → user confirms
 - Flow: protocols/team.md → TeamCreate → spawn agents → coordinate → shutdown
 
+### Example 4: Cross-Model Review (M Grade + Codex)
+- Input: "Review the auth module for security issues"
+- Probe: review task, single module -> M
+- Flow: code-reviewer (Claude) -> codex review --uncommitted (Codex) -> merge findings
+- Value: Two different model families catch different vulnerability patterns
+
+### Example 5: Codex Task Delegation (L Grade)
+- Input: "Optimize the sorting algorithm in utils.py"
+- Probe: single file, algorithm-heavy -> M, but user requests Codex
+- Flow: codex exec --full-auto -o result.txt -> Claude reviews result -> code-reviewer
+
 ## Maintenance
 
-- Version: 2.0.6
-- Updated: 2026-02-22
-- Sources: Source code analysis of 6 plugins (2026-02-18)
+- Version: 2.1.0
+- Updated: 2026-02-23
+- Sources: Source code analysis of 6 plugins + Codex CLI (2026-02-23)
 - Changelog: references/changelog.md
 - Known limits:
   - Hook execution order between plugins not controllable by VCO
