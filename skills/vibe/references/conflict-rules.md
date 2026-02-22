@@ -1,95 +1,76 @@
 # VCO Conflict Avoidance Rules
 
-Full specification for preventing conflicts between the 6 integrated tools.
+3 rules for preventing conflicts between the 6 integrated tools.
+VCO 通过指令约束（非代码强制）防止冲突。这些是规则而非建议——Claude 应严格遵守，但用户应知晓违反时不会有技术层面的阻断。
+All existing hooks remain active. VCO controls which MCP tools are actively invoked.
 
-## Principle
-
-VCO uses behavioral instructions (not code) to prevent conflicts. All existing
-hooks remain active. Conflicts are avoided by giving Claude clear rules about
-which tools to use in which situations.
-
-## Rule 1: Agent System Mutual Exclusion
+## Rule 1: Agent Boundary
 
 NEVER use multiple agent systems for the same task.
 
 | Grade | Agent System | Reason |
 |-------|-------------|--------|
-| S | None (direct action) | No overhead needed |
-| M | Everything-CC agents | Lightweight, focused |
+| M | Single-agent tools (Everything-CC agents as primary; individual skill commands like sc:design, systematic-debugging permitted — no subagent spawning) | Lightweight, focused |
 | L | Superpowers subagent-driven-dev | Two-stage review (spec + quality) |
-| XL | Claude-flow/ruflo | Swarm/hive-mind coordination |
+| XL | TeamCreate + ruflo (hybrid) | Team lifecycle + workflow + memory |
+| XL (degraded) | TeamCreate only | When ruflo unavailable |
 
-Exception: Specialized diagnostic agents may cross grade boundaries for their
-specific purpose. These are NOT general coding/review agents:
-- Everything-CC build-error-resolver: May be used at L grade for build failures
-- Everything-CC security-reviewer: May be used at any grade for security audits
+Exceptions (specialized diagnostic agents may cross grade boundaries):
+- build-error-resolver: May be used at any grade for build failures
+- security-reviewer: May be used at any grade for security audits
 
-Violation example (DO NOT DO):
-- Spawning ruflo agents AND using Superpowers subagent-driven-dev simultaneously
-- Using Everything-CC code-reviewer AND ruflo agent cluster review on same code
-- Using Everything-CC tdd-guide for L grade tasks (use Superpowers subagent system)
+Fallback provision: 当某 grade 的主 agent 系统不可用时，严格按 references/fallback-chains.md 定义的路径降级，不视为违反 Rule 1。不得自行选择降级目标。
 
-## Rule 2: Memory System Division
+### Contextual Notes
+
+**Brainstorming deconfliction:**
+- Requirements discovery -> Superpowers brainstorming (HARD-GATE)
+- Architecture design -> SuperClaude sc:design (persona system)
+- Implementation planning -> Superpowers writing-plans
+- Never invoke both brainstorming systems simultaneously
+
+**Review deconfliction:**
+- M -> Everything-CC code-reviewer (lightweight, auto-triggered)
+- L -> Superpowers two-stage review (spec + quality)
+- XL -> TeamCreate multi-agent review (parallel perspectives)
+- Security review -> Everything-CC security-reviewer (any grade, exempt)
+
+**Hook coexistence:**
+- All hooks from all plugins run. VCO does not disable any hooks.
+- Superpowers SessionStart: always runs, VCO respects skill-checking mandate
+- Everything-CC PreToolUse/PostToolUse: always runs, VCO leverages quality guards
+- Claude-flow hooks: run passively, VCO only actively calls ruflo for XL tasks
+- Ralph-loop Stop: only activates when user explicitly starts /ralph-loop
+- TeamCreate has no hooks (native tool, always available)
+
+## Rule 2: Memory Division
 
 Each memory system has a specific role. Do not cross boundaries.
 
 | Memory System | Scope | Use For |
 |--------------|-------|---------|
-| episodic-memory | Cross-session, long-term | Searching past conversations, finding historical decisions |
-| ruflo memory_store | Current project, session-level | Storing current task state, intermediate results |
-| Everything-CC instincts | Behavioral patterns | Learning coding preferences, auto-applying patterns |
-| Serena MCP write_memory | Project knowledge | Storing project-specific architectural decisions |
+| TodoWrite | Session-level (default) | Task state, intermediate results |
+| ruflo memory_store | Current project, session | Vector search, enhanced state (when available) |
+| Serena MCP write_memory | Project knowledge | Architecture decisions, conventions |
+| episodic-memory | Cross-session, long-term | Searching past conversations |
+| Everything-CC instincts | Behavioral patterns | Auto-applying learned patterns |
 
-## Rule 3: Hook Coexistence Strategy
+Key principle: TodoWrite is the DEFAULT, not the fallback.
+ruflo/Serena are ENHANCEMENTS. System runs fully on TodoWrite + conversation context even if all MCP servers are down.
 
-All hooks from all plugins run. VCO does not disable any hooks.
-Instead, VCO controls which MCP tools are actively invoked.
-
-| Plugin | Hook Types | VCO Strategy |
-|--------|-----------|--------------|
-| Superpowers | SessionStart | Always runs. VCO respects skill-checking mandate. |
-| Everything-CC | PreToolUse, PostToolUse, SessionStart, Stop | Always runs. VCO leverages its code quality guards. |
-| Claude-flow | PreToolUse, PostToolUse, PreCompact, Stop | Hooks run passively. VCO only actively calls ruflo MCP tools for XL tasks. |
-| Ralph-loop | Stop | Only activates when user explicitly starts /ralph-loop. VCO never auto-starts it. |
-
-## Rule 4: Command Priority
-
-When VCO routes to a specific protocol, follow VCO instructions
-rather than the tool default behavior.
+## Rule 3: Command Priority
 
 Priority order:
-1. VCO protocol instructions (highest)
-2. SuperClaude sc:* commands (if explicitly invoked by user)
+1. User explicit command (highest) -- e.g., /sc:design, /ralph-loop -> bypass VCO
+2. VCO protocol instructions
 3. Individual plugin default behaviors (lowest)
 
-Exception: If user explicitly invokes a specific tool command
-(e.g., /sc:design, /ralph-loop), bypass VCO routing and use that tool directly.
-
-## Rule 5: Brainstorming Deconfliction
-
-Both Superpowers and SuperClaude have brainstorming capabilities.
-
-VCO resolution:
-- For requirements discovery: Use Superpowers brainstorming (has HARD-GATE enforcement)
-- For architecture design: Use SuperClaude sc:design (has persona system)
-- For implementation planning: Use Superpowers writing-plans (has plan document generation)
-
-Never invoke both brainstorming systems simultaneously.
-
-## Rule 6: Review System Deconfliction
-
-Multiple tools provide code review capabilities.
-
-VCO resolution:
-- Quick review (S/M grade): Everything-CC code-reviewer (lightweight, auto-triggered)
-- Thorough review (L grade): Superpowers two-stage review (spec compliance + code quality)
-- Cluster review (XL grade): ruflo agent cluster (parallel multi-perspective review)
-- Security review: Everything-CC security-reviewer (always, regardless of grade)
+Exception: If user explicitly invokes a specific tool command, bypass VCO routing and use that tool directly.
 
 ## Adding New Rules
 
 When a new conflict is discovered:
 1. Document the conflict scenario
 2. Define the resolution strategy
-3. Add to the appropriate rule section
-4. Update the SKILL.md Quick Reference if the rule is frequently needed
+3. Add to the appropriate rule section or contextual notes
+4. Update SKILL.md conflict summary if the rule is frequently needed

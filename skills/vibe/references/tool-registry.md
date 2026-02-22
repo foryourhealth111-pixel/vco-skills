@@ -1,17 +1,26 @@
 # VCO Tool Registry
 
-Complete reference of all 6 integrated tools, their capabilities, APIs, and state paths.
+Complete reference of all 6 integrated tools, their capabilities, APIs, state paths, and verification status.
 
 ## Tool Overview
 
-| # | Tool | Type | Hook Types | State Location |
-|---|------|------|------------|----------------|
-| 1 | Superpowers | Plugin (hooks + skills) | SessionStart | Stateless (conversation context) |
-| 2 | SuperClaude | Commands (markdown) | None | Serena MCP memory |
-| 3 | Ralph-loop | Plugin (hooks + skills) | Stop | .claude/ralph-loop.local.md |
-| 4 | Claude-code-settings | Plugin (skills + agents) | None | .specify/, .kiro/, .autonomous/ |
-| 5 | Everything-claude-code | Plugin (hooks + skills + agents) | SessionStart, PreToolUse, PostToolUse, Stop | ~/.claude/sessions/, ~/.claude/homunculus/ |
-| 6 | Claude-flow/ruflo | MCP Server | PreToolUse, PostToolUse, PreCompact, Stop | .claude-flow/ |
+| # | Tool | Type | Hook Types | State Location | Verified |
+|---|------|------|------------|----------------|----------|
+| 1 | Superpowers | Plugin (hooks + skills) | SessionStart | Stateless (conversation context) | ✅ |
+| 2 | SuperClaude | Commands (markdown) | None | Serena MCP memory | ⚠️ Partial |
+| 3 | Ralph-loop | Plugin (hooks + skills) | Stop | .claude/ralph-loop.local.md | ✅ |
+| 4 | Claude-code-settings | Plugin (skills + agents) | None | .specify/, .kiro/, .autonomous/ | ✅ |
+| 5 | Everything-claude-code | Plugin (hooks + skills + agents) | SessionStart, PreToolUse, PostToolUse, Stop | ~/.claude/sessions/, ~/.claude/homunculus/ | ✅ |
+| 6 | Claude-flow/ruflo + TeamCreate | MCP Server + Native | PreToolUse, PostToolUse, PreCompact, Stop | .claude-flow/ + ~/.claude/teams/ | ⚠️ MCP依赖 |
+
+## Verification Status Legend
+
+| Symbol | Meaning |
+|--------|---------|
+| ✅ | Capabilities verified, works as documented |
+| ⚠️ Partial | Some capabilities verified, some claimed but unverified |
+| ⚠️ MCP依赖 | Requires MCP server running; capabilities verified when available |
+| ❌ | Claimed capability does not work as documented |
 
 ---
 
@@ -21,14 +30,14 @@ Complete reference of all 6 integrated tools, their capabilities, APIs, and stat
 **Location**: ~/.claude/plugins/cache/superpowers-marketplace/superpowers/4.3.0/
 
 ### Key Skills
-| Skill | Purpose | Invocation |
-|-------|---------|------------|
-| brainstorming | Design-first requirements discovery | `superpowers:brainstorming` |
-| writing-plans | Generate implementation plans | `superpowers:writing-plans` |
-| subagent-driven-development | Execute plans with fresh subagent per task | `superpowers:subagent-driven-development` |
-| dispatching-parallel-agents | Run independent tasks concurrently | `superpowers:dispatching-parallel-agents` |
-| systematic-debugging | Structured debugging workflow | `superpowers:systematic-debugging` |
-| verification-before-completion | Final verification checklist | `superpowers:verification-before-completion` |
+| Skill | Purpose | Invocation | Verified |
+|-------|---------|------------|----------|
+| brainstorming | Design-first requirements discovery | `superpowers:brainstorming` | ✅ |
+| writing-plans | Generate implementation plans | `superpowers:writing-plans` | ✅ |
+| subagent-driven-development | Execute plans with fresh subagent per task | `superpowers:subagent-driven-development` | ✅ |
+| dispatching-parallel-agents | Run independent tasks concurrently | `superpowers:dispatching-parallel-agents` | ✅ |
+| systematic-debugging | Structured debugging workflow | `superpowers:systematic-debugging` | ✅ |
+| verification-before-completion | Final verification checklist | `superpowers:verification-before-completion` | ✅ |
 
 ### Characteristics
 - Soft-gate enforcement via persuasive language (not technical blocks)
@@ -49,22 +58,22 @@ Complete reference of all 6 integrated tools, their capabilities, APIs, and stat
 **Location**: ~/.claude/commands/sc/
 
 ### Key Commands
-| Command | Purpose | Category |
-|---------|---------|----------|
-| sc:brainstorm | Requirements discovery | Planning |
-| sc:design | Architecture design | Planning |
-| sc:implement | Feature implementation | Coding |
-| sc:spawn | Task orchestration | Orchestration |
-| sc:research | Deep web research | Research |
-| sc:workflow | Implementation workflow | Planning |
-| sc:test | Test execution | Quality |
-| sc:analyze | Code analysis | Quality |
-| sc:pm | Project manager agent | Management |
+| Command | Purpose | Category | Verified |
+|---------|---------|----------|----------|
+| sc:brainstorm | Requirements discovery | Planning | ✅ |
+| sc:design | Architecture design | Planning | ✅ |
+| sc:implement | Feature implementation | Coding | ✅ |
+| sc:spawn | Task orchestration | Orchestration | ✅ |
+| sc:research | Deep web research | Research | ✅ |
+| sc:workflow | Implementation workflow | Planning | ✅ |
+| sc:test | Test execution | Quality | ✅ |
+| sc:analyze | Code analysis | Quality | ✅ |
+| sc:pm | Project manager agent | Management | ⚠️ Claims "always active" but has no hook implementation |
 
 ### Characteristics
 - Pure command files (markdown), NOT a plugin
-- No hooks registered (despite documentation claims)
-- sc:pm claims "always active" but has no hook implementation
+- No hooks registered (despite documentation claims) ⚠️
+- sc:pm claims "always active" but has no hook implementation ⚠️
 - Relies on Serena MCP for state persistence
 - Uses cognitive personas (architect, frontend, backend, security, etc.)
 
@@ -75,11 +84,11 @@ Complete reference of all 6 integrated tools, their capabilities, APIs, and stat
 **Location**: ~/.claude/plugins/cache/claude-plugins-official/ralph-loop/
 
 ### Skills
-| Skill | Purpose |
-|-------|---------|
-| ralph-loop | Start continuous iteration loop |
-| cancel-ralph | Cancel active loop |
-| help | Explain plugin usage |
+| Skill | Purpose | Verified |
+|-------|---------|----------|
+| ralph-loop | Start continuous iteration loop | ✅ |
+| cancel-ralph | Cancel active loop | ✅ |
+| help | Explain plugin usage | ✅ |
 
 ### Characteristics
 - Only registers Stop hook
@@ -96,30 +105,30 @@ Complete reference of all 6 integrated tools, their capabilities, APIs, and stat
 **Location**: ~/.claude/plugins/cache/claude-code-settings/claude-code-settings/2.1.4/
 
 ### Key Skills
-| Skill | Purpose |
-|-------|---------|
-| deep-research | Multi-agent parallel research workflow |
-| spec-kit-skill | 7-phase constitution-based spec-driven development |
-| kiro-skill | Interactive feature development (EARS format) |
-| autonomous-skill | Long-running multi-session task automation |
-| codex-skill | OpenAI Codex/GPT integration |
+| Skill | Purpose | Verified |
+|-------|---------|----------|
+| deep-research | Multi-agent parallel research workflow | ✅ |
+| spec-kit-skill | 7-phase constitution-based spec-driven development | ✅ |
+| kiro-skill | Interactive feature development (EARS format) | ✅ |
+| autonomous-skill | Long-running multi-session task automation | ✅ |
+| codex-skill | OpenAI Codex/GPT integration | ⚠️ Requires external API |
 
 ### Key Commands
-| Command | Purpose |
-|---------|---------|
-| think-harder | 4-phase structured analysis |
-| think-ultra | 7-phase ultra-comprehensive analysis |
-| eureka | Technical breakthrough documentation |
+| Command | Purpose | Verified |
+|---------|---------|----------|
+| think-harder | 4-phase structured analysis | ✅ |
+| think-ultra | 7-phase ultra-comprehensive analysis | ✅ |
+| eureka | Technical breakthrough documentation | ✅ |
 
 ### Agents
-| Agent | Purpose |
-|-------|---------|
-| pr-reviewer | GitHub PR code review |
-| ui-engineer | Frontend/UI development |
-| github-issue-fixer | Issue resolution workflow |
+| Agent | Purpose | Verified |
+|-------|---------|----------|
+| pr-reviewer | GitHub PR code review | ✅ |
+| ui-engineer | Frontend/UI development | ✅ |
+| github-issue-fixer | Issue resolution workflow | ✅ |
 
 ### MCP Server
-- Chrome DevTools MCP (chrome-devtools-mcp)
+- Chrome DevTools MCP (chrome-devtools-mcp) ⚠️ Requires Chrome running
 
 ### Characteristics
 - No hooks registered
@@ -135,22 +144,22 @@ Complete reference of all 6 integrated tools, their capabilities, APIs, and stat
 **Location**: ~/.claude/plugins/cache/everything-claude-code/everything-claude-code/1.4.1/
 
 ### Key Agents
-| Agent | Model | Purpose |
-|-------|-------|---------|
-| planner | Opus | Feature planning |
-| architect | Opus | System design |
-| code-reviewer | Sonnet | Quality/security review |
-| tdd-guide | Sonnet | Test-driven development |
-| security-reviewer | Sonnet | Vulnerability detection |
-| build-error-resolver | Sonnet | Build fix specialist |
+| Agent | Model | Purpose | Verified |
+|-------|-------|---------|----------|
+| planner | Opus | Feature planning | ✅ |
+| architect | Opus | System design | ✅ |
+| code-reviewer | Sonnet | Quality/security review | ✅ |
+| tdd-guide | Sonnet | Test-driven development | ✅ |
+| security-reviewer | Sonnet | Vulnerability detection | ✅ |
+| build-error-resolver | Sonnet | Build fix specialist | ✅ |
 
 ### Key Skills
-| Skill | Purpose |
-|-------|---------|
-| tdd-workflow | TDD enforcement (80%+ coverage) |
-| verification-loop | Comprehensive verification |
-| continuous-learning | Pattern extraction from sessions |
-| continuous-learning-v2 | Instinct-based learning system |
+| Skill | Purpose | Verified |
+|-------|---------|----------|
+| tdd-workflow | TDD enforcement (80%+ coverage) | ✅ |
+| verification-loop | Comprehensive verification | ✅ |
+| continuous-learning | Pattern extraction from sessions | ✅ |
+| continuous-learning-v2 | Instinct-based learning system | ✅ |
 
 ### Instinct System (v2)
 - Observations: ~/.claude/homunculus/observations.jsonl
@@ -167,28 +176,25 @@ Complete reference of all 6 integrated tools, their capabilities, APIs, and stat
 
 ---
 
-## 6. Claude-flow/ruflo (ruvnet/claude-flow)
+## 6. Claude-flow/ruflo + TeamCreate (ruvnet/claude-flow + native)
 
 **Version**: 3.1.0-alpha.41
-**MCP Server**: ruflo (via claude-flow.cmd mcp start)
+**MCP Server**: ruflo ⚠️ MCP 依赖
+- 150+ 工具已注册为 deferred tools，需通过 ToolSearch 加载后使用
+- 首次调用任何 ruflo 工具前，必须先 ToolSearch 加载对应工具
+- MCP server 未运行时所有工具不可用，走 fallback chain
 **Location**: ~/.npm-global/node_modules/claude-flow/
 
 ### MCP Tool Categories (100+ tools)
-| Category | Key Tools | Purpose |
-|----------|-----------|---------|
-| agent | agent_spawn, agent_list, agent_pool | Agent lifecycle management |
-| swarm | swarm_init, swarm_status | Basic coordination |
-| hive-mind | hive-mind_spawn, hive-mind_consensus | Advanced collective intelligence |
-| memory | memory_store, memory_search | HNSW vector memory (150x-12500x faster) |
-| workflow | workflow_create, workflow_execute | Workflow engine (5 step types) |
-| task | task_create, task_list | Task queue management |
-| claims | claims_claim, claims_board | Collaborative issue claims |
-| embeddings | embeddings_generate, embeddings_search | ONNX + hyperbolic embeddings |
-| neural | neural_train, neural_patterns | Neural model operations |
-| browser | browser_open, browser_click | Browser automation |
-| hooks | hooks_route, hooks_metrics | Semantic routing + learning |
-| session | session_save, session_restore | Session management |
-| coordination | coordination_orchestrate | Multi-agent coordination |
+| Category | Key Tools | Purpose | Verified |
+|----------|-----------|---------|----------|
+| agent | agent_spawn, agent_list, agent_pool | Agent lifecycle management | ⚠️ MCP依赖 |
+| swarm | swarm_init, swarm_status | Basic coordination | ⚠️ MCP依赖 |
+| hive-mind | hive-mind_spawn, hive-mind_consensus | Advanced collective intelligence | ⚠️ MCP依赖 |
+| memory | memory_store, memory_search | HNSW vector memory | ⚠️ MCP依赖 |
+| workflow | workflow_create, workflow_execute | Workflow engine (5 step types) | ⚠️ MCP依赖 |
+| task | task_create, task_list | Task queue management | ⚠️ MCP依赖 |
+| session | session_save, session_restore | Session management | ⚠️ MCP依赖 |
 
 ### State Directory
 ```
@@ -198,16 +204,27 @@ Complete reference of all 6 integrated tools, their capabilities, APIs, and stat
   hive-mind/state.json
   workflows/store.json
   tasks/store.json
-  claims/claims.json
   sessions/
-  neural/models.json
-  performance/metrics.json
 ```
 
 ### Characteristics
-- 60+ specialized agent types with intelligent model routing
-- 3 consensus algorithms (Majority, Weighted, Byzantine)
+- 60+ agent type templates with model routing（基于 prompt 模板的角色分化）
+- 3 aggregation modes (Majority voting, Weighted voting, Multi-perspective validation)
 - HNSW vector search (150x-12,500x faster than JSON)
-- RuVector neural components (SONA, EWC++, Flash Attention)
 - File-based state in .claude-flow/ (per-project)
 - No API keys required (local embeddings)
+
+### TeamCreate Native Integration
+
+TeamCreate is a built-in Claude Code tool (always available, no MCP dependency). ✅
+
+| Tool | Purpose | Verified |
+|------|---------|----------|
+| TeamCreate | Create team + task list | ✅ Always available |
+| Task (with team_name) | Spawn teammate agents | ✅ Always available |
+| TaskCreate / TaskUpdate / TaskList | Task management + assignment | ✅ Always available |
+| SendMessage | Inter-agent DM, broadcast, shutdown | ✅ Always available |
+| TeamDelete | Clean up team resources | ✅ Always available |
+
+TeamCreate manages agent lifecycle; ruflo provides workflow engine + vector memory.
+When ruflo is unavailable, TeamCreate operates independently (degraded mode).

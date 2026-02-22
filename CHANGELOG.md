@@ -2,49 +2,80 @@
 
 All notable changes to VCO (Vibe Code Orchestrator) are documented here.
 
-Format: [Semantic Versioning](https://semver.org/) with detailed rationale for each change.
+Format: [Semantic Versioning](https://semver.org/)
+
+---
+
+## [2.0.6] - 2026-02-22
+
+### Fixed
+- Rule 1 in conflict-rules.md contradicted Tool Selection matrix — M grade changed from "Everything-CC agents" to "single-agent tools (skill commands permitted, subagent spawning prohibited)"
+- L grade Dialectic Mode used read-only Plan agent — changed to general-purpose agent
+- Added Excluded tools note under Tool Selection matrix (sc:implement banned)
+
+## [2.0.5] - 2026-02-22
+
+### Added
+- Chinese keywords for Quick Probe
+- Explicit fallback paths for each step in retro.md Phase 2
+
+### Fixed
+- index.md template count 5→6
+- do.md terminology "Fallback exception" → "Fallback provision" aligned with conflict-rules.md
+
+## [2.0.4] - 2026-02-22
+
+### Added
+- dialectic-design to specialized agents list
+- M grade Behavioral Tone reference
+- team.md Dialectic Mode full section
+- team-templates updated to 6 templates
+
+## [2.0.3] - 2026-02-22
+
+### Changed
+- M grade stage sequence moved to overview line
+- Scope check changed to qualitative + quantitative OR condition
+- Grade Definitions added Key Signal column and conflict arbitration rule
+
+### Added
+- Fallback provision in conflict-rules.md
+- Probe failure default behavior
+- Low-friction rule classification feedback format
+
+## [2.0.2] - 2026-02-22
+
+### Fixed
+- do.md L grade fallback exception contradicted conflict rule
+- P3/V1 inline definitions added
+- team.md ToolSearch prerequisite step added
+- SKILL.md M grade stage order and scope-exceeded pause rule
+
+## [2.0.1] - 2026-02-22
+
+### Changed
+- **Major restructure**: S grade removed (implicit), 4→3 grades, 8→5 protocols, 6→3 conflict rules
+- Sub-skills consolidated into main vibe skill
+- Quick probe + user decision gate added
+- Team templates added
 
 ---
 
 ## [1.2.0] - 2026-02-18
 
 ### Changed
-- **retrospective.md Phase 3**: Replaced passive "Discussion Rules" with proactive "Pedagogical Advisory" interaction style
-  - Files: `skills/vibe/references/protocols/retrospective.md`
-  - Rationale: User requested the retrospective discussion to be more interactive and teaching-oriented. The original style ("AI provides data-backed observations, not opinions") was too passive for a collaborative review session. New style uses guiding questions, analogies from user history, and concrete improvement paths while still respecting user autonomy.
+- retrospective.md Phase 3: Replaced passive "Discussion Rules" with proactive "Pedagogical Advisory"
 
 ### Added
-- **Iteration Governance section** in extending-vco.md
-  - Files: `skills/vibe/references/extending-vco.md`
-  - Rationale: User identified the need for disciplined VCO evolution. Without governance rules, VCO risks accumulating unnecessary complexity. Three principles added: Occam's Razor (prove necessity before adding), User Confirmation Gate (explicit approval for structural changes), Change Rationale Recording (every change must explain WHY).
-- **CHANGELOG.md** (this file)
-  - Rationale: No iteration history existed. Without a changelog, the evolution of VCO is invisible, making it hard to understand why decisions were made or to roll back changes.
-
----
+- Iteration Governance section in extending-vco.md
 
 ## [1.1.0] - 2026-02-18
 
 ### Added
-- **vibe-retrospective protocol** (5-phase collaborative review system)
-  - Files: `skills/vibe/references/protocols/retrospective.md` (new), `skills/vibe-retro/SKILL.md` (new)
-  - Rationale: User wanted a structured way to review recent projects, detect error patterns, optimize workflows, and decide whether to create new hooks/skills/agents/MCPs. Designed as pure tool composition across 6 plugins (GATHER from 5 data sources, ANALYZE with 4 tools, DISCUSS via Socratic dialogue, DECIDE with user confirmation gate, ACT with existing creation tools).
-- **Routing and index updates** for retrospective
-  - Files: `skills/vibe/SKILL.md`, `skills/vibe/references/index.md`, `skills/vibe/references/extending-vco.md`
-  - Rationale: New protocol must be discoverable through VCO routing. Added to routing decision tree, protocol table, index, and protocol alignment list.
-
----
+- vibe-retrospective protocol (5-phase collaborative review system)
 
 ## [1.0.0] - 2026-02-18
 
 ### Added
-- **Initial release** of VCO with 7 protocols and 5 sub-skills
-  - Core router: `skills/vibe/SKILL.md`
-  - Protocols: analysis, think, code, review, quality-injection, orchestrate, memory
-  - Sub-skills: vibe-build, vibe-plan, vibe-review, vibe-flow
-  - Reference docs: tool-registry, routing-table, conflict-rules, fallback-chains, extending-vco, index
-  - Rationale: 6 Claude Code plugins installed simultaneously caused tool overlap, conflict risk, and decision fatigue. VCO provides a single entry point that classifies tasks by complexity (S/M/L/XL), routes to optimal tool combinations, and prevents plugin conflicts through behavioral rules.
-- **Quality Injection protocol** (13 patterns)
-  - Files: `skills/vibe/references/protocols/quality-injection.md`
-  - Rationale: Analysis revealed that single-agent tools (systematic-debugging, verification-before-completion, etc.) contain excellent quality patterns that multi-agent workflows lack. Quality injection bridges this gap by extracting 6 pre-injection and 7 post-validation patterns from single-agent tools and injecting them into multi-agent workflows.
-- **README.md** with comprehensive documentation
-  - Rationale: GitHub repository needs clear documentation for installation, prerequisites, usage, and architecture understanding.
+- Initial release of VCO with 7 protocols and 5 sub-skills
+- Quality Injection protocol (13 patterns)
