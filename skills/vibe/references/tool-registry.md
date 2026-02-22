@@ -277,6 +277,8 @@ Add to Claude Code MCP config:
 | `--base BRANCH` | Review changes against base branch |
 | `--commit SHA` | Review specific commit |
 
+Note: `--uncommitted`, `--base`, `--commit` are mutually exclusive with `[PROMPT]` positional argument. Use either a flag OR a prompt, not both.
+
 ### Cross-Tool Compatibility
 
 - `CLAUDE.md` ↔ `AGENTS.md` symlink: both tools read the same instructions

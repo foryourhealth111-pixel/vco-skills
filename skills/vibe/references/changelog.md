@@ -1,6 +1,12 @@
 # VCO Changelog
 
 
+## v2.1.1 (2026-02-23)
+
+### Fixed
+- `codex review` documentation: `--uncommitted`/`--base`/`--commit` flags are mutually exclusive with `[PROMPT]` argument. Previously showed `codex review --uncommitted "prompt"` which errors at runtime.
+- Cleaned up corrupted changelog entry (sed artifact from v2.1.0 push)
+
 ## v2.1.0 (2026-02-23)
 
 ### Added
@@ -14,7 +20,6 @@
 - install.sh: Codex detection and config setup
 
 ## v2.0.6 (2026-02-22)
-## v2.1.0 (2026-02-23)### Added- OpenAI Codex cross-model integration (Tool #7)- Three interaction modes: MCP server, exec delegation, dual-model review- codex/ directory: exec wrapper script, MCP config, Codex config template, AGENTS.md template- Codex routing table in SKILL.md Section 2- Codex integration section in SKILL.md (MCP, exec, review, cross-tool instructions)- Tool registry entry for Codex with all CLI flags documented- Examples 4-5: cross-model review and Codex task delegation- install.sh/install.ps1: Codex detection and config setup
 
 - C1 修复 conflict-rules.md Rule 1 与 Tool Selection 矩阵矛盾——M 级从"Everything-CC agents"改为"single-agent tools（允许 sc:design/systematic-debugging 等 skill commands，禁止 subagent spawning）"
 - C2 修复 L 级 Dialectic Mode 使用只读 Plan agent 的问题——改为 general-purpose agent

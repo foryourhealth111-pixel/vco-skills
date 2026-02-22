@@ -199,9 +199,11 @@ Read result file after completion. Use --json for JSONL output. Use --output-sch
 
 After Claude Code writes code, get a second opinion:
 ```
-codex review --uncommitted "Focus on security and edge cases"
-codex review --base main "Review all changes on this branch"
+codex review --uncommitted                          # review all uncommitted changes (no prompt)
+codex review "Focus on security and edge cases"     # review with specific prompt (no flags)
+codex review --base main                            # review changes against base branch
 ```
+Note: `--uncommitted`, `--base`, `--commit` flags are mutually exclusive with `[PROMPT]` argument.
 
 ### Cross-Tool Shared Instructions
 
@@ -275,7 +277,7 @@ Detect availability AFTER routing selects a tool, BEFORE invoking:
 
 ## Maintenance
 
-- Version: 2.1.0
+- Version: 2.1.1
 - Updated: 2026-02-23
 - Sources: Source code analysis of 6 plugins + Codex CLI (2026-02-23)
 - Changelog: references/changelog.md
