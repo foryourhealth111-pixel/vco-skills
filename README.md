@@ -1,140 +1,145 @@
 # VCO — Vibe Code Orchestrator
 
-> Unified orchestration layer for Claude Code that intelligently routes tasks across integrated plugins, eliminating tool selection confusion and preventing plugin conflicts.
+> One-stop ecosystem for Claude Code: unified task routing across 6+ plugins, with rules, hooks, commands, and automated installation.
 
-VCO acts as a **meta-skill** — it doesn't replace any existing tool, but sits above them as a routing and coordination layer. When you type `/vibe`, VCO classifies your task by complexity and type, selects the optimal tool combination, applies conflict avoidance rules, and executes with quality gates.
+VCO is a meta-skill that sits above your Claude Code plugins as a routing and coordination layer. Type `/vibe` and VCO classifies your task, selects optimal tools, applies conflict avoidance rules, and executes with quality gates.
 
-## Why VCO?
+## Quick Start
 
-When you install multiple Claude Code plugins, you face:
-- **Tool overlap**: 3+ plugins can do code review, 2+ can do brainstorming, 2+ can do research
-- **Conflict risk**: Running multiple agent systems simultaneously causes unpredictable behavior
-- **Decision fatigue**: Choosing between 100+ MCP tools, 30+ skills, and 20+ agents per task
+```bash
+# Clone
+git clone https://github.com/foryourhealth111-pixel/vco-skills.git
+cd vco-skills
 
-VCO solves this by providing a single entry point (`/vibe`) that makes all routing decisions automatically.
+# Install everything (bash)
+bash install.sh
+
+# Or PowerShell (Windows)
+.\install.ps1
+
+# Verify
+bash check.sh
+```
+
+Then edit `~/.claude/settings.json` to add your API credentials, start a new Claude Code session, and type `/vibe <your task>`.
+
+## What Gets Installed
+
+| Component | Files | Target |
+|-----------|-------|--------|
+| VCO Skill | SKILL.md + 5 protocols + 7 references | `~/.claude/skills/vibe/` |
+| Rules | 9 common + 5 typescript | `~/.claude/rules/` |
+| Hooks | write-guard.js + 2 hookify configs | `~/.claude/hooks/` |
+| SuperClaude | 30+ sc:* commands (cloned from upstream) | `~/.claude/commands/sc/` |
+| Plugins | 10 marketplace plugins | via `claude plugins install` |
+| claude-flow | Multi-agent orchestration | via `npm install -g` |
 
 ## Architecture
 
 ```
-                         /vibe (user input)
-                              |
-                    ┌─────────┴─────────┐
-                    │   Quick Probe     │
-                    │  (Glob/Grep ×2)   │
-                    └─────────┬─────────┘
-                              |
-                    ┌─────────┴─────────┐
-                    │  Grade Decision   │
-                    │  M / L / XL       │
-                    └─────────┬─────────┘
-                              |
-              ┌───────────────┼───────────────┐
-              |               |               |
-        ┌─────┴─────┐  ┌─────┴─────┐  ┌─────┴─────┐
-        │ M Grade    │  │ L Grade   │  │ XL Grade  │
-        │ Single     │  │ Design →  │  │ TeamCreate│
-        │ Agent      │  │ Subagent  │  │ Swarm     │
-        └────────────┘  └───────────┘  └───────────┘
+/vibe <task>
+    │
+    ├── Quick Probe (Glob/Grep ×2)
+    │
+    ├── Grade Classification
+    │   ├── M — Single agent (≤5 files, clear path)
+    │   ├── L — Design → subagent (cross-module, design decisions)
+    │   └── XL — TeamCreate swarm (parallelizable)
+    │
+    ├── Tool Selection (per grade × task type)
+    │   ├── Planning:  sc:design │ brainstorming+plans │ TeamCreate
+    │   ├── Coding:    tdd-guide │ subagent-driven-dev │ TeamCreate
+    │   ├── Review:    code-reviewer │ two-stage review │ multi-reviewer
+    │   ├── Debug:     systematic-debugging │ parallel │ debug team
+    │   └── Research:  sc:research │ deep-research │ research team
+    │
+    └── Quality Gates: P5 (evidence-based) + V2 (completion) + V3 (pipeline)
 ```
 
-### Grade-Based Routing
+## Plugin Ecosystem
 
-| Grade | When Appropriate | Key Signal | Execution Mode |
-|-------|-----------------|------------|----------------|
-| M | Clear implementation path, no design decisions | ≤5 files + no design keywords + single module | Single agent: analyze + execute + review |
-| L | Design decisions or cross-module coordination | Design keywords OR >5 files OR multi-module | Design first → plan → subagent → two-stage review |
-| XL | Parallelizable independent workflows | User requests multi-agent OR structurally parallel | TeamCreate team coordination |
+### Core (Required)
 
-Not invoking `/vibe` = implicit simple task, zero overhead.
+| Plugin | Source | Role in VCO |
+|--------|--------|-------------|
+| [superpowers](https://github.com/obra/superpowers) | superpowers-marketplace | L grade: brainstorming, writing-plans, subagent-driven-dev, deep-research |
+| [everything-claude-code](https://github.com/punkpeye/everything-claude-code) | everything-claude-code | M grade agents: tdd-guide, code-reviewer, planner, architect |
+| [claude-code-settings](https://github.com/feiskyer/claude-code-settings) | claude-code-settings | Structured analysis: think-harder, think-ultra |
+| [hookify](https://github.com/anthropics/claude-code-plugins) | claude-plugins-official | Hook management |
+| [ralph-loop](https://github.com/frankbria/ralph-claude-code) | claude-plugins-official | Autonomous development loop |
+| [SuperClaude](https://github.com/SuperClaude-Org/SuperClaude_Framework) | Git clone | sc:* commands (design, research, brainstorm) |
 
-### Tool Selection Matrix
+### Recommended (Optional)
 
-| Task Type | M Grade | L Grade | XL Grade |
-|-----------|---------|---------|----------|
-| Planning | sc:design | brainstorming + writing-plans | dialectic-design / TeamCreate |
-| Coding | tdd-guide + code-reviewer | subagent-driven-dev | TeamCreate team |
-| Review | code-reviewer + security-reviewer | two-stage review (spec + quality) | TeamCreate multi-reviewer |
-| Debug | systematic-debugging | systematic-debugging + parallel | TeamCreate debug team |
-| Research | sc:research or deep-research | deep-research | TeamCreate research team |
+| Plugin | Role | Fallback |
+|--------|------|----------|
+| [episodic-memory](https://github.com/obra/superpowers) | Cross-session vector memory | TodoWrite |
+| [serena](https://github.com/anthropics/claude-code-plugins) | Semantic code analysis + project memory | Glob/Grep |
+| [context7](https://github.com/anthropics/claude-code-plugins) | Library documentation lookup | WebSearch |
+| [claude-flow](https://github.com/ruvnet/claude-flow) | XL grade multi-agent swarm | TeamCreate native |
+| [spec-kit](https://github.com/github/spec-kit) | Spec-driven development reference | — |
 
-### Protocol System
+## Repository Structure
 
-| Protocol | File | When |
-|----------|------|------|
-| vibe-think | protocols/think.md | Planning, design, research (L grade) |
-| vibe-do | protocols/do.md | Coding, debugging (L grade) |
-| vibe-review | protocols/review.md | Code review, security audit (M/L/XL) |
-| vibe-team | protocols/team.md | XL multi-agent coordination |
-| vibe-retro | protocols/retro.md | Workflow review and improvement |
+```
+vco-skills/
+├── install.sh                  # Bash installer
+├── install.ps1                 # PowerShell installer
+├── check.sh                    # Health check
+├── skills/
+│   └── vibe/                   # VCO core
+│       ├── SKILL.md            # Router + grade definitions
+│       ├── protocols/          # 5 execution protocols
+│       └── references/         # 7 reference docs
+├── rules/
+│   ├── common/                 # 9 universal rules
+│   │   ├── agents.md           # Agent orchestration patterns
+│   │   ├── coding-style.md     # Immutability, file organization
+│   │   ├── engineering-instincts.md  # Core engineering principles
+│   │   ├── git-workflow.md     # Commit format, PR workflow
+│   │   ├── hooks.md            # Hook system usage
+│   │   ├── patterns.md         # Design patterns
+│   │   ├── performance.md      # Model selection, context management
+│   │   ├── security.md         # Security checklist
+│   │   └── testing.md          # TDD, 80% coverage requirement
+│   └── typescript/             # 5 TypeScript-specific rules
+├── hooks/
+│   ├── write-guard.js          # Block unnecessary file creation
+│   └── hookify-configs/        # Hookify plugin configs
+├── config/
+│   ├── settings.template.json  # Sanitized settings (add your API key)
+│   └── plugins-manifest.json   # Full plugin list with install commands
+└── CHANGELOG.md
+```
 
-### Conflict Avoidance (3 Rules)
-
-| Rule | What It Prevents |
-|------|-----------------|
-| Rule 1: Agent Boundary | M=single-agent tools, L=subagent, XL=TeamCreate. One system per task. |
-| Rule 2: Memory Division | TodoWrite=state, ruflo=vectors, Serena=project, instincts=behavior. |
-| Rule 3: Command Priority | User explicit command > VCO routing > plugin defaults. |
-
-### Core Quality Gates
-
-- **P5**: Evidence-Based Communication — NEVER say "should work". Use [Command] [Output] [Claim] format.
-- **V2**: Completion Gate — IDENTIFY → RUN → READ → VERIFY → MARK COMPLETE.
-- **V3**: Quality Pipeline — Build → Types → Lint → Tests → Security → Diff → [READY/NOT READY].
-
-## Installation
-
-### Step 1: Clone this repository
+## Install Options
 
 ```bash
-git clone https://github.com/foryourhealth111-pixel/vco-skills.git
+# Full install (everything)
+bash install.sh
+
+# Skip marketplace plugins (install them manually later)
+bash install.sh --skip-plugins
+
+# Skip SuperClaude (if you already have it)
+bash install.sh --skip-superclaude
+
+# Skip claude-flow (only needed for XL grade)
+bash install.sh --skip-claude-flow
 ```
 
-### Step 2: Copy skill to Claude Code skills directory
+## Conflict Avoidance
 
-```bash
-cp -r vco-skills/skills/vibe ~/.claude/skills/vibe
-```
+| Rule | Prevents |
+|------|----------|
+| Agent Boundary | M=single-agent, L=subagent, XL=TeamCreate. One system per task. |
+| Memory Division | TodoWrite=state, ruflo=vectors, Serena=project, instincts=behavior. |
+| Command Priority | User explicit > VCO routing > plugin defaults. |
 
-### Step 3: Verify installation
+## Version
 
-Start a new Claude Code session and type:
-```
-/vibe Hello, verify VCO is working
-```
-
-## File Structure
-
-```
-skills/
-└── vibe/                          # VCO entry point
-    ├── SKILL.md                   # Core routing logic, matrix, execution flow
-    ├── protocols/
-    │   ├── do.md                  # Implementation/debug protocol
-    │   ├── retro.md               # Retrospective meeting protocol
-    │   ├── review.md              # Code review/security protocol
-    │   ├── team.md                # Multi-agent coordination protocol
-    │   └── think.md               # Planning/design/research protocol
-    └── references/
-        ├── changelog.md           # Version history
-        ├── conflict-rules.md      # 3 conflict avoidance rules
-        ├── extending-vco.md       # Guide for adding new tools
-        ├── fallback-chains.md     # Degradation paths per task type
-        ├── index.md               # Navigation index
-        ├── team-templates.md      # 6 predefined team compositions
-        └── tool-registry.md       # Tool capabilities + verification status
-```
-
-## Extending VCO
-
-See `references/extending-vco.md` for the full guide.
-
-## Limitations
-
-- **Behavioral enforcement only**: VCO uses instructions, not technical enforcement. Claude may occasionally deviate.
-- **Hook execution order**: VCO cannot control the order hooks from different plugins execute.
-- **Plugin availability**: VCO degrades gracefully but works best with all plugins installed.
-- **Context window**: Complex L/XL tasks may consume significant context.
-- **Quick probe accuracy**: Depends on task description quality.
+- VCO: 2.0.6
+- Ecosystem: 1.0.0
 
 ## License
 
