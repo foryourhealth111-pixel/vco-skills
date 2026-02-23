@@ -1,6 +1,21 @@
 # VCO Changelog
 
 
+## v2.2.0 (2026-02-23)
+
+### Added
+- `codex exec resume` multi-turn collaboration mode: Claude Code can now have stateful multi-turn conversations with Codex via `codex exec resume <thread_id> "prompt"`
+- New Codex routing table entry: Multi-turn tasks → `codex exec` + `codex exec resume`
+- Example 6: Multi-turn Codex collaboration workflow
+- `exec resume` key flags table in tool-registry.md
+- Codex verification log with test results (exec ✅, exec resume ✅, review ✅, mcp-server ⚠️)
+- MCP service verification timestamps: episodic-memory ✅, ruflo ✅, context7 ✅, GitHub ✅
+
+### Changed
+- Codex exec/review verification status upgraded from ⚠️ to ✅ (tested 2026-02-23)
+- tool-registry.md header: "6 integrated tools" → "7 integrated tools"
+- exec `--json` flag description updated: "includes thread_id for resume"
+
 ## v2.1.1 (2026-02-23)
 
 ### Fixed

@@ -106,6 +106,7 @@ When Codex is available (API key configured + `codex` CLI installed), VCO can ro
 | Coding | Tasks suited to o3/gpt-5-codex reasoning (algorithm, math-heavy) | codex exec "task" --full-auto |
 | Debug | Second opinion when Claude cannot find root cause | codex exec "debug: ..." --full-auto -o result.txt |
 | Research | Codex web_search as complement to Claude search | Via MCP: codex mcp-server |
+| Multi-turn | Complex tasks requiring iterative Codex collaboration | codex exec + codex exec resume <thread_id> |
 
 Codex routing is ALWAYS optional. If Codex is unavailable, VCO falls back to Claude-only tools.
 Detection: `command -v codex` before routing.
@@ -195,6 +196,23 @@ codex exec "task description" --full-auto -o /tmp/codex-result.txt -C /path/to/p
 ```
 Read result file after completion. Use --json for JSONL output. Use --output-schema for structured responses.
 
+### exec resume Mode (Multi-Turn Collaboration)
+
+Continue a previous Codex session with full conversation context:
+```
+# Round 1: create session, capture thread_id from JSONL
+codex exec "analyze models.py architecture" --full-auto --json -C /path/to/project
+# → JSONL output includes: {"type":"thread.started","thread_id":"<UUID>"}
+
+# Round 2+: resume with follow-up (Codex loads full history)
+codex exec resume <thread_id> "based on your analysis, optimize the bottleneck" --full-auto --json
+```
+Key behavior:
+- Codex persists session history; `exec resume` loads it as cached context
+- Each round is non-interactive but shares full conversation memory
+- Claude Code orchestrates by parsing `thread_id` from round 1 JSONL, then chaining `exec resume` calls
+- Use `--last` instead of `<thread_id>` to resume the most recent session
+
 ### review Mode (Cross-Model Review)
 
 After Claude Code writes code, get a second opinion:
@@ -275,9 +293,15 @@ Detect availability AFTER routing selects a tool, BEFORE invoking:
 - Probe: single file, algorithm-heavy -> M, but user requests Codex
 - Flow: codex exec --full-auto -o result.txt -> Claude reviews result -> code-reviewer
 
+### Example 6: Multi-Turn Codex Collaboration (L Grade)
+- Input: "Use Codex to analyze and then refactor the data pipeline"
+- Probe: multi-step, cross-model -> L
+- Flow: codex exec "analyze pipeline" --json → parse thread_id → codex exec resume <id> "refactor based on analysis" → Claude reviews diff → code-reviewer
+- Value: Codex maintains full context across rounds; Claude orchestrates the conversation chain
+
 ## Maintenance
 
-- Version: 2.1.1
+- Version: 2.2.0
 - Updated: 2026-02-23
 - Sources: Source code analysis of 6 plugins + Codex CLI (2026-02-23)
 - Changelog: references/changelog.md

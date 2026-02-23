@@ -1,6 +1,6 @@
 # VCO Tool Registry
 
-Complete reference of all 6 integrated tools, their capabilities, APIs, state paths, and verification status.
+Complete reference of all 7 integrated tools, their capabilities, APIs, state paths, and verification status.
 
 ## Tool Overview
 
@@ -50,6 +50,7 @@ Complete reference of all 6 integrated tools, their capabilities, APIs, state pa
 - Backend: SQLite + sqlite-vec (384-dim vectors)
 - Storage: ~/.claude/episodic-memory/
 - Tool names: `episodic-memory:search`, `episodic-memory:read`
+- Verified: ✅ (2026-02-23) Semantic search returns ranked results with project/date/snippets
 
 ---
 
@@ -213,6 +214,7 @@ Complete reference of all 6 integrated tools, their capabilities, APIs, state pa
 - HNSW vector search (150x-12,500x faster than JSON)
 - File-based state in .claude-flow/ (per-project)
 - No API keys required (local embeddings)
+- Verified: ✅ (2026-02-23) system_status healthy, memory_search 348ms, all 4 components running (swarm/memory/neural/mcp)
 
 ### TeamCreate Native Integration
 
@@ -242,8 +244,9 @@ When ruflo is unavailable, TeamCreate operates independently (degraded mode).
 | Mode | Method | Purpose | Verified |
 |------|--------|---------|----------|
 | MCP Server | `codex mcp-server` (stdio) | Deep integration — Codex tools appear as native MCP tools in Claude Code | ⚠️ Requires Codex API key |
-| exec 委派 | `codex exec "task" --full-auto` | Non-interactive task delegation with structured output | ⚠️ Requires Codex API key |
-| review 审查 | `codex review --uncommitted` | Cross-model code review (different model = different blind spots) | ⚠️ Requires Codex API key |
+| exec 委派 | `codex exec "task" --full-auto` | Non-interactive task delegation with structured output | ✅ Tested |
+| exec resume 多轮 | `codex exec resume <thread_id> "prompt"` | Multi-turn collaboration — resumes previous session with full context | ✅ Tested |
+| review 审查 | `codex review --uncommitted` | Cross-model code review (different model = different blind spots) | ✅ Tested |
 
 ### MCP Server Registration
 
@@ -262,12 +265,23 @@ Add to Claude Code MCP config:
 | Flag | Purpose |
 |------|---------|
 | `--full-auto` | Autonomous execution (sandbox + auto-approve) |
-| `--json` | JSONL event stream output |
+| `--json` | JSONL event stream output (includes thread_id for resume) |
 | `-o FILE` | Write final message to file |
 | `--output-schema FILE` | Structured output via JSON Schema |
 | `-C DIR` | Working directory |
 | `-m MODEL` | Override model |
 | `-s MODE` | Sandbox: read-only, workspace-write, danger-full-access |
+
+### exec resume Key Flags
+
+| Flag | Purpose |
+|------|---------|
+| `<SESSION_ID>` | UUID thread_id from previous session's JSONL output |
+| `[PROMPT]` | Follow-up prompt (Codex sees full prior conversation) |
+| `--last` | Resume most recent session (no ID needed) |
+| `--all` | Show all sessions (disables cwd filtering) |
+| `--full-auto` | Autonomous execution |
+| `--json` | JSONL event stream output |
 
 ### review Key Flags
 
@@ -288,6 +302,17 @@ Note: `--uncommitted`, `--base`, `--commit` are mutually exclusive with `[PROMPT
 ### Characteristics
 - Different model family (GPT/o3) provides complementary perspective to Claude
 - exec mode supports timeout and structured output for automation
+- exec resume enables multi-turn collaboration with full session persistence
 - MCP server mode enables deepest integration (Codex tools as Claude Code tools)
 - No hooks registered (external tool, invoked on demand)
 - Requires separate API key (OpenAI or Azure OpenAI)
+
+### Verification Log (2026-02-23)
+
+| Test | Result | Details |
+|------|--------|---------|
+| `codex exec` single-shot | ✅ PASS | Task delegation works, `-o` file output works, 48K tokens |
+| `codex exec resume` multi-turn | ✅ PASS | 3-round conversation, thread_id preserved, cached_input_tokens confirms context loading |
+| `codex review --uncommitted` | ✅ PASS | Deep analysis of all changed files |
+| `codex review --uncommitted "prompt"` | ❌ EXPECTED FAIL | Flags and `[PROMPT]` are mutually exclusive (Codex CLI constraint) |
+| `codex mcp-server` | ⚠️ NOT TESTED | Requires adding to Claude Code MCP config and restarting |
